@@ -1,7 +1,5 @@
 # PDFSplitAddon
 
-## Description
-
 This add-on adds a new function to the context menu of local PDF files. This function allows you to cut parent PDFs for their child titles.
 
 ## Releases
