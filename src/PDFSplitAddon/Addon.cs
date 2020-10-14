@@ -18,44 +18,41 @@ namespace PDFSplit
 
         #endregion
 
-        #region Fields
-
-        CommandbarButton _button;
-
-        #endregion
-
         #region Methods
 
         public override void OnApplicationIdle(MainForm mainForm)
         {
-            if (_button != null)
+            if (mainForm.ReferenceEditorElectronicLocationsToolbarsManager?.Tools.Cast<ToolBase>().FirstOrDefault(tool => tool.Key.Equals("ReferenceEditorUriLocationsContextMenu")) is PopupMenuTool popupMenu)
             {
-                var selectedElectronicLocations = mainForm.GetSelectedElectronicLocations();
-                var selectedReferences = mainForm.GetSelectedReferences();
-                var reference = mainForm.ActiveReference;
+                var menu = CommandbarMenu.Create(popupMenu);
 
-                if (selectedElectronicLocations.Count == 1 && selectedReferences.Count == 1 && reference != null)
+                if (menu.GetCommandbarButton(Keys_Button_ShowPdfSplitDialog) is CommandbarButton button)
                 {
-                    var location = selectedElectronicLocations.FirstOrDefault();
+                    var selectedElectronicLocations = mainForm.GetSelectedElectronicLocations();
+                    var selectedReferences = mainForm.GetSelectedReferences();
+                    var reference = mainForm.ActiveReference;
 
-                    if (location != null)
+                    if (selectedElectronicLocations.Count == 1 && selectedReferences.Count == 1 && reference != null)
                     {
-                        var path = location.Address.Resolve().GetLocalPathSafe();
+                        var location = selectedElectronicLocations.FirstOrDefault();
 
-                        if (!string.IsNullOrEmpty(path))
+                        if (location != null)
                         {
-                            _button.Visible = path.EndsWith("pdf") && reference.ChildReferences.Count != 0;
+                            var path = location.Address.Resolve().GetLocalPathSafe();
 
-                            base.OnApplicationIdle(mainForm);
-                            return;
+                            if (!string.IsNullOrEmpty(path))
+                            {
+                                button.Visible = path.EndsWith("pdf") && reference.ChildReferences.Count != 0;
+
+                                base.OnApplicationIdle(mainForm);
+                                return;
+                            }
                         }
                     }
+
+                    button.Visible = false;
                 }
-
-                _button.Visible = false;
             }
-
-            base.OnApplicationIdle(mainForm);
         }
 
         public override void OnHostingFormLoaded(MainForm mainForm)
@@ -65,10 +62,9 @@ namespace PDFSplit
                 if (mainForm.ReferenceEditorElectronicLocationsToolbarsManager?.Tools.Cast<ToolBase>().FirstOrDefault(tool => tool.Key.Equals("ReferenceEditorUriLocationsContextMenu")) is PopupMenuTool popupMenu)
                 {
                     var menu = CommandbarMenu.Create(popupMenu);
-                    _button = menu.InsertCommandbarButton(3, Keys_Button_ShowPdfSplitDialog, Properties.Resources.Addon_Command_Caption, image: Properties.Resources.CommandIcon);
+                    menu.InsertCommandbarButton(3, Keys_Button_ShowPdfSplitDialog, Properties.Resources.Addon_Command_Caption, image: Properties.Resources.CommandIcon);
                 }
             }
-            base.OnHostingFormLoaded(mainForm);
         }
 
         public override void OnBeforePerformingCommand(MainForm mainForm, BeforePerformingCommandEventArgs e)
@@ -102,15 +98,19 @@ namespace PDFSplit
 
                 e.Handled = true;
             }
-
-            base.OnBeforePerformingCommand(mainForm, e);
         }
 
-        public override void OnLocalizing(MainForm form)
+        public override void OnLocalizing(MainForm mainForm)
         {
-            if (_button != null) _button.Text = Properties.Resources.Addon_Command_Caption;
+            if (mainForm.ReferenceEditorElectronicLocationsToolbarsManager?.Tools.Cast<ToolBase>().FirstOrDefault(tool => tool.Key.Equals("ReferenceEditorUriLocationsContextMenu")) is PopupMenuTool popupMenu)
+            {
+                var menu = CommandbarMenu.Create(popupMenu);
 
-            base.OnLocalizing(form);
+                if (menu.GetCommandbarButton(Keys_Button_ShowPdfSplitDialog) is CommandbarButton button)
+                {
+                    button.Text = Properties.Resources.Addon_Command_Caption;
+                }
+            }
         }
 
         #endregion
