@@ -4,6 +4,7 @@ using SwissAcademic.Citavi.Shell;
 using SwissAcademic.Citavi.Shell.Controls.Preview;
 using SwissAcademic.Controls;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
@@ -24,6 +25,14 @@ namespace PDFSplit
         {
             if (mainForm.ReferenceEditorElectronicLocationsToolbarsManager?.Tools.Cast<ToolBase>().FirstOrDefault(tool => tool.Key.Equals("ReferenceEditorUriLocationsContextMenu")) is PopupMenuTool popupMenu)
             {
+                if (Application.OpenForms.OfType<GenericProgressDialog>().ToList() is List<GenericProgressDialog> dialogs && dialogs.Any())
+                {
+                    if (dialogs.Any(dialog => dialog.GetType().GetProperty("DialogOwner", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(dialog) == mainForm))
+                    {
+                        return;
+                    }
+                }
+
                 var menu = CommandbarMenu.Create(popupMenu);
 
                 if (menu.GetCommandbarButton(Keys_Button_ShowPdfSplitDialog) is CommandbarButton button)
@@ -38,14 +47,21 @@ namespace PDFSplit
 
                         if (location != null)
                         {
-                            var path = location.Address.Resolve().GetLocalPathSafe();
-
-                            if (!string.IsNullOrEmpty(path))
+                            try
                             {
-                                button.Visible = path.EndsWith("pdf") && reference.ChildReferences.Count != 0;
+                                var path = location.Address.Resolve().GetLocalPathSafe();
 
-                                base.OnApplicationIdle(mainForm);
-                                return;
+                                if (!string.IsNullOrEmpty(path))
+                                {
+                                    button.Visible = path.EndsWith("pdf") && reference.ChildReferences.Count != 0;
+
+                                    base.OnApplicationIdle(mainForm);
+                                    return;
+                                }
+                            }
+                            catch (Exception ignored)
+                            {
+                                // fix issue if time zone corrective logic enabled
                             }
                         }
                     }
