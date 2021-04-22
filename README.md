@@ -12,7 +12,7 @@ Note: This add-on can only be used with local (!) projects, not with cloud proje
 
 Please follow these steps:
 
-1. Install the update to the current version of Citavi 6 [Download](https://www.citavi.com/download).
+1. Install the update to the current version of Citavi 6 [Download](https://www.citavi.com/download). You can also [check here](https://www.citavi.com/beta) to see if a beta version is available that contains all the latest bug fixes.
 2. Close Citavi 6.
 3. On the [add-on-page](https://github.com/lutz/PDFSplitAddon), click on [releases](https://github.com/lutz/PDFSplitAddon/releases) in the `Release` section and download the ZIP file of the add-on linked there.
 4. Extract the add-on by right-clicking the ZIP file and clicking `Extract all`.
